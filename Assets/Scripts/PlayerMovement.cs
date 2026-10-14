@@ -3,6 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Punto de aparición")]
+    [SerializeField] private Transform puntoAparicion;
+
     [Header("Movimiento horizontal")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float acceleration = 35f;
@@ -16,8 +19,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Deteccion del suelo")]
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private Vector2 groundCheckSize =
-        new Vector2(0.5f, 0.12f);
+    [SerializeField]
+    private Vector2 groundCheckSize = new Vector2(0.5f, 0.12f);
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Tolerancia del salto")]
@@ -41,12 +44,36 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
     }
 
+    private void Start()
+    {
+        if (puntoAparicion != null)
+        {
+            rb.position = new Vector2(
+                puntoAparicion.position.x,
+                puntoAparicion.position.y
+            );
+
+            rb.linearVelocity = Vector2.zero;
+        }
+    }
+    
     private void Update()
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
+        var teclado = UnityEngine.InputSystem.Keyboard.current;
+
+        horizontalInput = 0f;
+
+        if (teclado != null)
+        {
+            if (teclado.aKey.isPressed || teclado.leftArrowKey.isPressed)
+                horizontalInput -= 1f;
+
+            if (teclado.dKey.isPressed || teclado.rightArrowKey.isPressed)
+                horizontalInput += 1f;
+        }
 
         // Registrar la pulsacion de salto.
-        if (Input.GetButtonDown("Jump"))
+        if (teclado != null && teclado.spaceKey.wasPressedThisFrame)
         {
             jumpBufferCounter = jumpBufferTime;
         }
@@ -55,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        if (Input.GetButtonUp("Jump"))
+        if (teclado != null && teclado.spaceKey.wasReleasedThisFrame)
         {
             jumpReleased = true;
         }
@@ -70,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
             ) != null;
 
         // Recuperar el salto al aterrizar.
-        if (isGrounded && rb.linearVelocity.y <= 0.01f)
+        if (isGrounded)
         {
             jumpConsumed = false;
             coyoteCounter = coyoteTime;
@@ -88,25 +115,60 @@ public class PlayerMovement : MonoBehaviour
         AdjustGravity();
     }
 
+
+
     private void MoveHorizontally()
     {
-        float targetSpeed = horizontalInput * moveSpeed;
+        // Detectar la superficie sobre la que está el jugador.
+        Collider2D suelo = groundCheck != null
+            ? Physics2D.OverlapBox(
+                groundCheck.position,
+                groundCheckSize,
+                0f,
+                groundLayer)
+            : null;
 
-        float rate = Mathf.Abs(targetSpeed) > 0.01f
+        // Obtener la velocidad de la plataforma móvil.
+        float velocidadPlataforma = 0f;
+
+        if (suelo != null)
+        {
+            PlataformaMovil plataforma =
+                suelo.GetComponent<PlataformaMovil>();
+
+            if (plataforma != null)
+            {
+                velocidadPlataforma = plataforma.VelocidadHorizontal;
+            }
+            else if (suelo.attachedRigidbody != null)
+            {
+                velocidadPlataforma =
+                    suelo.attachedRigidbody.linearVelocity.x;
+            }
+        }
+
+        // Calcular el movimiento relativo a la plataforma.
+        float velocidadObjetivo = horizontalInput * moveSpeed;
+        float velocidadRelativa =
+            rb.linearVelocity.x - velocidadPlataforma;
+
+        float tasa = Mathf.Abs(horizontalInput) > 0.01f
             ? acceleration
             : deceleration;
 
-        float newSpeed = Mathf.MoveTowards(
-            rb.linearVelocity.x,
-            targetSpeed,
-            rate * Time.fixedDeltaTime
+        float nuevaVelocidad = Mathf.MoveTowards(
+            velocidadRelativa,
+            velocidadObjetivo,
+            tasa * Time.fixedDeltaTime
         );
 
         rb.linearVelocity = new Vector2(
-            newSpeed,
+            nuevaVelocidad + velocidadPlataforma,
             rb.linearVelocity.y
         );
     }
+
+
 
     private void HandleJump()
     {

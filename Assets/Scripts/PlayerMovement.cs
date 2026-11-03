@@ -25,6 +25,23 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 groundCheckSize = new Vector2(0.65f, 0.12f);
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Deteccion de paredes")]
+    [SerializeField] private Transform wallCheckLeft;
+    [SerializeField] private Transform wallCheckRight;
+
+    [SerializeField] private Vector2 wallCheckSize =
+    new Vector2(0.15f, 0.8f);
+
+    [SerializeField] private LayerMask wallLayer;
+
+    [Header("Wall Jump")]
+    [SerializeField] private float wallJumpVerticalForce = 12f;
+    [SerializeField] private float wallJumpHorizontalForce = 8f;
+    [SerializeField] private float wallJumpLockDuration = 0.15f;
+
+    private float wallJumpLockTimer;
+    private bool isWallJumping;
+
     [Header("Tolerancia del salto")]
     [SerializeField] private float coyoteTime = 0.12f;
     [SerializeField] private float jumpBufferTime = 0.12f;
@@ -51,6 +68,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private bool jumpReleased;
     private bool jumpCutApplied;
+
+    // Indica si el jugador esta tocando una pared.
+    private bool isTouchingWallLeft;
+    private bool isTouchingWallRight;
 
     // Doble salto.
     private bool hasUsedFirstJump;
@@ -94,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
         ReadJumpInput();
         ReadDashInput();
         CheckGround();
+        CheckWalls();
 
         // Actualizar el tiempo de espera entre dashes.
         if (dashCooldownTimer > 0f)
@@ -200,6 +222,27 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void CheckWalls()
+    {
+        // Comprobar si hay una pared a la izquierda.
+        isTouchingWallLeft = wallCheckLeft != null &&
+            Physics2D.OverlapBox(
+                wallCheckLeft.position,
+                wallCheckSize,
+                0f,
+                wallLayer
+            ) != null;
+
+        // Comprobar si hay una pared a la derecha.
+        isTouchingWallRight = wallCheckRight != null &&
+            Physics2D.OverlapBox(
+                wallCheckRight.position,
+                wallCheckSize,
+                0f,
+                wallLayer
+            ) != null;
+    }
+
     private void FixedUpdate()
     {
         // Si estamos haciendo dash, tiene prioridad sobre
@@ -226,12 +269,56 @@ public class PlayerMovement : MonoBehaviour
         AdjustGravity();
     }
 
+    private bool TryWallJump()
+    {
+        // No podemos hacer Wall Jump estando en el suelo.
+        if (isGrounded)
+            return false;
+
+        // Comprobamos si estamos tocando alguna pared.
+        if (!isTouchingWallLeft && !isTouchingWallRight)
+            return false;
+
+        // Determinamos hacia dónde debemos impulsarnos.
+        float direction = 0f;
+
+        if (isTouchingWallLeft)
+            direction = 1f;
+        else if (isTouchingWallRight)
+            direction = -1f;
+
+        // Aplicamos el impulso vertical y horizontal.
+        rb.linearVelocity = new Vector2(
+            direction * wallJumpHorizontalForce,
+            wallJumpVerticalForce
+        );
+
+        // Activamos el bloqueo temporal del movimiento horizontal.
+        isWallJumping = true;
+        wallJumpLockTimer = wallJumpLockDuration;
+
+        // Actualizamos la última dirección del jugador.
+        lastDirection = direction;
+
+        return true;
+    }
+
     // ------------------------------------------------
     // MOVIMIENTO HORIZONTAL
     // ------------------------------------------------
 
     private void MoveHorizontally()
     {
+        // Durante el Wall Jump bloqueamos el control horizontal.
+        if (wallJumpLockTimer > 0f)
+        {
+            wallJumpLockTimer -= Time.fixedDeltaTime;
+            return;
+        }
+
+        isWallJumping = false;
+
+        
         Collider2D suelo = groundCheck != null
             ? Physics2D.OverlapBox(
                 groundCheck.position,
@@ -291,6 +378,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (jumpBufferCounter > 0f)
         {
+            // Primero intentamos realizar un Wall Jump.
+            if (TryWallJump())
+            {
+                jumpBufferCounter = 0f;
+                jumpReleased = false;
+                jumpCutApplied = false;
+
+                return;
+            }
             bool canFirstJump =
                 !hasUsedFirstJump && coyoteCounter > 0f;
 
@@ -427,11 +523,34 @@ public class PlayerMovement : MonoBehaviour
         if (groundCheck == null)
             return;
 
+        // Detector del suelo.
         Gizmos.color = Color.yellow;
 
         Gizmos.DrawWireCube(
             groundCheck.position,
             groundCheckSize
         );
+
+        // Detector de la pared izquierda.
+        if (wallCheckLeft != null)
+        {
+            Gizmos.color = isTouchingWallLeft ? Color.red : Color.green;
+
+            Gizmos.DrawWireCube(
+                wallCheckLeft.position,
+                wallCheckSize
+            );
+        }
+
+        // Detector de la pared derecha.
+        if (wallCheckRight != null)
+        {
+            Gizmos.color = isTouchingWallRight ? Color.red : Color.cyan;
+
+            Gizmos.DrawWireCube(
+                wallCheckRight.position,
+                wallCheckSize
+            );
+        }
     }
 }

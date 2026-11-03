@@ -21,8 +21,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Deteccion del suelo")]
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private Vector2 groundCheckSize =
-        new Vector2(0.65f, 0.12f);
+    [SerializeField]
+    private Vector2 groundCheckSize = new Vector2(0.65f, 0.12f);
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Tolerancia del salto")]
@@ -134,9 +134,9 @@ public class PlayerMovement : MonoBehaviour
     {
         Keyboard teclado = Keyboard.current;
 
-        // Detectar cuando pulsamos C.
+        // Detectar cuando pulsamos ESP.
         if (teclado != null &&
-            teclado.cKey.wasPressedThisFrame)
+            teclado.spaceKey.wasPressedThisFrame)
         {
             jumpBufferCounter = jumpBufferTime;
         }
@@ -148,9 +148,9 @@ public class PlayerMovement : MonoBehaviour
             );
         }
 
-        // Detectar cuando soltamos C.
+        // Detectar cuando soltamos ESP.
         if (teclado != null &&
-            teclado.cKey.wasReleasedThisFrame)
+            teclado.spaceKey.wasReleasedThisFrame)
         {
             jumpReleased = true;
         }
@@ -161,7 +161,8 @@ public class PlayerMovement : MonoBehaviour
         Keyboard teclado = Keyboard.current;
 
         if (teclado != null &&
-            teclado.xKey.wasPressedThisFrame)
+            (teclado.leftShiftKey.wasPressedThisFrame ||
+             teclado.rightShiftKey.wasPressedThisFrame))
         {
             dashRequested = true;
         }

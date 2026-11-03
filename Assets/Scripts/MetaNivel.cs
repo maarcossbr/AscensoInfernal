@@ -1,18 +1,22 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using System;
 
 public class MetaNivel : MonoBehaviour
 {
     [Header("Sistema de minerales")]
     [SerializeField] private GestorMinerales gestorMinerales;
     [SerializeField] private TMP_Text textoAviso;
+    [SerializeField] private GameObject panelVictoria;
 
     private bool nivelCompletado = false;
     private Coroutine avisoActual;
 
     private void Start()
     {
+        if(panelVictoria != null) panelVictoria.SetActive(false);
+        
         Time.timeScale = 1f;
 
         if (textoAviso != null)
@@ -62,6 +66,12 @@ public class MetaNivel : MonoBehaviour
         Debug.Log("¡VICTORIA! Has completado el nivel.");
 
         Time.timeScale = 0f;
+        PanelFin();
+    }
+
+    private void PanelFin()
+    {
+        if(panelVictoria != null) panelVictoria.SetActive(true);
     }
 
     private IEnumerator OcultarAviso()

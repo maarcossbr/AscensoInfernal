@@ -10,7 +10,11 @@ public class LavaController : MonoBehaviour
 
     public float currentSpeed;
 
+    [Header("Pantalla de muerte")]
+    [SerializeField] private GameObject panelMuerte;
+
     private Rigidbody2D rb;
+    private bool jugadorMuerto = false;
 
     private void Awake()
     {
@@ -20,30 +24,52 @@ public class LavaController : MonoBehaviour
     private void Start()
     {
         currentSpeed = baseSpeed;
+
+        if (panelMuerte != null)
+            panelMuerte.SetActive(false);
     }
 
     private void FixedUpdate()
     {
         currentSpeed += acceleration * Time.fixedDeltaTime;
 
-        Vector2 nuevaPosicion = rb.position + Vector2.up * currentSpeed * Time.fixedDeltaTime;
+        Vector2 nuevaPosicion = rb.position +
+            Vector2.up * currentSpeed * Time.fixedDeltaTime;
 
         rb.MovePosition(nuevaPosicion);
     }
 
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            // Restablecer el tiempo del juego.
-            Time.timeScale = 1f;
+        if (jugadorMuerto || !collision.CompareTag("Player"))
+            return;
 
-            // Reiniciar la escena actual.
-            SceneManager.LoadScene(
-                SceneManager.GetActiveScene().name
-            );
+        jugadorMuerto = true;
+
+        if (panelMuerte != null)
+        {
+            panelMuerte.SetActive(true);
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Debug.LogError("No se ha asignado el panel de muerte.");
+            Reintentar();
         }
     }
 
+    public void Reintentar()
+    {
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().name
+        );
+    }
+
+    public void VolverAlMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Menu_Inicio");
+    }
 }

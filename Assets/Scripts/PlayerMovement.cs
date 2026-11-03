@@ -168,21 +168,44 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
     private void CheckGround()
     {
-        bool touchingGround = groundCheck != null &&
-            Physics2D.OverlapBox(
+        Collider2D suelo = groundCheck != null
+            ? Physics2D.OverlapBox(
                 groundCheck.position,
                 groundCheckSize,
                 0f,
                 groundLayer
-            ) != null;
+            )
+            : null;
+
+        float velocidadVerticalSuelo = 0f;
+
+        if (suelo != null)
+        {
+            PlataformaMovil plataforma =
+                suelo.GetComponent<PlataformaMovil>();
+
+            if (plataforma != null)
+            {
+                velocidadVerticalSuelo =
+                    plataforma.VelocidadVertical;
+            }
+            else if (suelo.attachedRigidbody != null)
+            {
+                velocidadVerticalSuelo =
+                    suelo.attachedRigidbody.linearVelocity.y;
+            }
+        }
+
+        bool touchingGround = suelo != null;
 
         isGrounded = touchingGround &&
-                     rb.linearVelocity.y <= 0.01f;
+            rb.linearVelocity.y - velocidadVerticalSuelo <= 0.01f;
 
         // Recuperar saltos y dash al aterrizar.
-        // No recuperar mientras estamos ejecutando un dash.
+        // No recuperar durante un dash.
         if (isGrounded && !isDashing)
         {
             hasUsedFirstJump = false;
@@ -199,6 +222,7 @@ public class PlayerMovement : MonoBehaviour
             );
         }
     }
+
 
     private void FixedUpdate()
     {

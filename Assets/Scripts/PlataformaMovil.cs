@@ -8,6 +8,7 @@ public class PlataformaMovil : MonoBehaviour
     [SerializeField] private float duracionIda = 1.5f;
 
     public float VelocidadHorizontal { get; private set; }
+    public float VelocidadVertical { get; private set; }
 
     private Rigidbody2D rb;
     private Vector2 posicionInicial;
@@ -19,11 +20,13 @@ public class PlataformaMovil : MonoBehaviour
         posicionInicial = rb.position;
     }
 
+
     private void FixedUpdate()
     {
         if (duracionIda <= 0f)
         {
             VelocidadHorizontal = 0f;
+            VelocidadVertical = 0f;
             return;
         }
 
@@ -35,6 +38,10 @@ public class PlataformaMovil : MonoBehaviour
         VelocidadHorizontal =
             (destino.x - rb.position.x) / Time.fixedDeltaTime;
 
+        VelocidadVertical =
+            (destino.y - rb.position.y) / Time.fixedDeltaTime;
+
         rb.MovePosition(destino);
     }
+
 }

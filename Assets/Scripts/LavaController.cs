@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class LavaController : MonoBehaviour
 {
-    public float baseSpeed = 0.6f;
+    public float baseSpeed = 0.9f;
     public float acceleration = 0.02f;
 
     public float currentSpeed;

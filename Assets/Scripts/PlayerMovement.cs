@@ -127,23 +127,45 @@ public class PlayerMovement : MonoBehaviour
     private void ReadMovementInput()
     {
         Keyboard teclado = Keyboard.current;
+        Gamepad mando = Gamepad.current;
 
         horizontalInput = 0f;
 
-        if (teclado == null)
+        if (teclado == null && mando == null)
             return;
 
-        if (teclado.aKey.isPressed ||
-            teclado.leftArrowKey.isPressed)
+        // TECLADO
+        if (teclado != null)
         {
-            horizontalInput -= 1f;
-        }
+            if (teclado.aKey.isPressed ||
+                teclado.leftArrowKey.isPressed)
+            {
+                horizontalInput -= 1f;
+            }
 
-        if (teclado.dKey.isPressed ||
-            teclado.rightArrowKey.isPressed)
-        {
-            horizontalInput += 1f;
+            if (teclado.dKey.isPressed ||
+                teclado.rightArrowKey.isPressed)
+            {
+                horizontalInput += 1f;
+            }
         }
+        
+        // MANDO
+        if (mando != null)
+        {
+            // lectura stick izq
+            float stick = mando.leftStick.x.ReadValue();
+
+            // lectura d-pad
+            if (mando.dpad.left.isPressed) stick = -1f;
+            if (mando.dpad.right.isPressed) stick = 1f;
+
+            if (Mathf.Abs(stick) > 0.2f) // Zona muerta (deadzone) básica
+            {
+                horizontalInput = stick;
+            }
+        }
+        
 
         // Guardar la ultima direccion de movimiento.
         if (horizontalInput != 0f)
@@ -155,10 +177,23 @@ public class PlayerMovement : MonoBehaviour
     private void ReadJumpInput()
     {
         Keyboard teclado = Keyboard.current;
-
-        // Detectar cuando pulsamos ESP.
+        Gamepad mando = Gamepad.current;
+        
+        bool jumpPressedFrame = false;
+        bool jumpRealeasedFrame = false;
+        // Detectar cuando pulsamos ESP o el boton 'sur' del mando.
         if (teclado != null &&
             teclado.spaceKey.wasPressedThisFrame)
+        {
+            jumpPressedFrame = true;
+        }
+        if (mando != null &&
+            mando.buttonSouth.wasPressedThisFrame)
+        {
+            jumpPressedFrame = true;
+        }
+
+        if(jumpPressedFrame)
         {
             jumpBufferCounter = jumpBufferTime;
         }
@@ -170,24 +205,41 @@ public class PlayerMovement : MonoBehaviour
             );
         }
 
-        // Detectar cuando soltamos ESP.
+        // Detectar cuando soltamos ESP o boton 'sur' del mando.
         if (teclado != null &&
             teclado.spaceKey.wasReleasedThisFrame)
         {
-            jumpReleased = true;
+            jumpRealeasedFrame = true;
         }
+        if (mando != null &&
+            mando.buttonSouth.wasReleasedThisFrame)
+        {
+            jumpRealeasedFrame = true;
+        }
+
+        if (jumpRealeasedFrame) jumpReleased = true;
     }
 
     private void ReadDashInput()
     {
         Keyboard teclado = Keyboard.current;
+        Gamepad mando = Gamepad.current;
+
+        bool dashPressed = false;
 
         if (teclado != null &&
             (teclado.leftShiftKey.wasPressedThisFrame ||
              teclado.rightShiftKey.wasPressedThisFrame))
         {
-            dashRequested = true;
+            dashPressed = true;
         }
+        if (mando != null && 
+            (mando.buttonWest.wasPressedThisFrame))
+        {
+            dashPressed = true;
+        }
+
+        if (dashPressed) dashRequested = true;
     }
 
 

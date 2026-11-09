@@ -53,14 +53,17 @@ public class PlayerDeathUI : MonoBehaviour
 
         if (checkpoint != null && checkpoint.HasCheckpoint)
         {
+
             CheckpointRespawn.PrepararRespawn(
                 SceneManager.GetActiveScene().name,
                 checkpoint.LastCheckpointPosition,
                 checkpoint.HealthAtCheckpoint,
                 checkpoint.HasLavaState,
                 checkpoint.LavaPositionAtCheckpoint,
-                checkpoint.LavaSpeedAtCheckpoint
+                checkpoint.LavaSpeedAtCheckpoint,
+                checkpoint.MineralesEnCheckpoint
             );
+
         }
         else
         {

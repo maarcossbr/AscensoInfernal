@@ -15,6 +15,7 @@ public class CheckpointRespawn : MonoBehaviour
     private static bool lavaGuardada;
     private static Vector2 posicionLavaGuardada;
     private static float velocidadLavaGuardada;
+    private static string[] mineralesGuardados = System.Array.Empty<string>();
 
     [RuntimeInitializeOnLoadMethod(
         RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -26,15 +27,11 @@ public class CheckpointRespawn : MonoBehaviour
         vidasGuardadas = 0;
         posicionLavaGuardada = Vector2.zero;
         velocidadLavaGuardada = 0f;
+        mineralesGuardados = System.Array.Empty<string>();
     }
 
-    public static void PrepararRespawn(
-        string escena,
-        Vector3 posicion,
-        int vidas,
-        bool tieneLava,
-        Vector2 posicionLava,
-        float velocidadLava)
+
+    public static void PrepararRespawn(string escena, Vector3 posicion, int vidas, bool tieneLava, Vector2 posicionLava, float velocidadLava, string[] minerales)
     {
         escenaGuardada = escena;
         posicionGuardada = posicion;
@@ -44,8 +41,13 @@ public class CheckpointRespawn : MonoBehaviour
         posicionLavaGuardada = posicionLava;
         velocidadLavaGuardada = velocidadLava;
 
+        mineralesGuardados = minerales != null
+            ? (string[])minerales.Clone()
+            : System.Array.Empty<string>();
+
         respawnPendiente = true;
     }
+
 
     public static bool TryGetLavaState(
         out Vector2 posicion,
@@ -88,9 +90,43 @@ public class CheckpointRespawn : MonoBehaviour
         GetComponent<PlayerHealth>()
             .RestoreHealth(vidasGuardadas);
 
+
+        GestorMinerales gestor = FindFirstObjectByType<GestorMinerales>();
+
+        if (gestor != null)
+        {
+            foreach (string mineral in mineralesGuardados)
+            {
+                gestor.RecogerMineral();
+            }
+        }
+        else if (mineralesGuardados.Length > 0)
+        {
+            Debug.LogWarning(
+                "No se encontró GestorMinerales al reaparecer."
+            );
+        }
+
         GetComponent<PlayerCheckpoint>()
             .ActivateCheckpoint(posicionGuardada);
 
         Debug.Log("Jugador reaparecido en checkpoint.");
     }
+
+
+    public static bool MineralGuardado(string id)
+    {
+        if (!respawnPendiente ||
+            SceneManager.GetActiveScene().name != escenaGuardada)
+            return false;
+
+        foreach (string mineral in mineralesGuardados)
+        {
+            if (mineral == id)
+                return true;
+        }
+
+        return false;
+    }
+
 }

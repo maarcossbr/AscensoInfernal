@@ -2273,6 +2273,7 @@ GameObject:
   - component: {fileID: 809293915}
   - component: {fileID: 809293914}
   - component: {fileID: 809293919}
+  - component: {fileID: 809293920}
   m_Layer: 0
   m_Name: Lava
   m_TagString: Untagged
@@ -2441,6 +2442,18 @@ MonoBehaviour:
   acceleration: 0.02
   currentSpeed: 0
   panelMuerte: {fileID: 1115004433}
+--- !u!114 &809293920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809293913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9002be3437aa72a4d8cbc14faaf7a983, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LavaCheckpointReset
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -3973,6 +3986,7 @@ GameObject:
   - component: {fileID: 1379541474}
   - component: {fileID: 1379541477}
   - component: {fileID: 1379541476}
+  - component: {fileID: 1379541478}
   m_Layer: 0
   m_Name: Mineral1
   m_TagString: Untagged
@@ -4103,6 +4117,19 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &1379541478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379541473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d18223ec1835684abeb92e4e205f289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MineralCheckpointId
+  mineralId: mineral_01
 --- !u!1 &1447474540
 GameObject:
   m_ObjectHideFlags: 0
@@ -4650,6 +4677,7 @@ GameObject:
   - component: {fileID: 1796086786}
   - component: {fileID: 1796086785}
   - component: {fileID: 1796086784}
+  - component: {fileID: 1796086788}
   m_Layer: 0
   m_Name: Mineral2
   m_TagString: Untagged
@@ -4780,6 +4808,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1796086788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1796086783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d18223ec1835684abeb92e4e205f289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MineralCheckpointId
+  mineralId: mineral_02
 --- !u!1001 &1971720507
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4858,6 +4899,7 @@ GameObject:
   - component: {fileID: 2069469810}
   - component: {fileID: 2069469809}
   - component: {fileID: 2069469808}
+  - component: {fileID: 2069469812}
   m_Layer: 0
   m_Name: Mineral3
   m_TagString: Untagged
@@ -4988,6 +5030,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2069469812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069469807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d18223ec1835684abeb92e4e205f289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MineralCheckpointId
+  mineralId: mineral_03
 --- !u!4 &2086910928 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6523385097744479677, guid: b610aa9ddbe1ee04aa644add42c98a8f, type: 3}

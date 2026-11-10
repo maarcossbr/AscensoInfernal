@@ -77,13 +77,26 @@ public class PlayerDeathUI : MonoBehaviour
         );
     }
 
-
-
     public void VolverAlMenu()
     {
         Time.timeScale = 1f;
 
         SceneManager.LoadScene("Menu_Inicio");
+    }
+
+
+    public void ReiniciarNivel()
+    {
+        // Olvidar el checkpoint y los datos del respawn.
+        CheckpointRespawn.CancelarRespawn();
+
+        // Restaurar el tiempo normal del juego.
+        Time.timeScale = 1f;
+
+        // Recargar el nivel desde cero.
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().name
+        );
     }
 
 }

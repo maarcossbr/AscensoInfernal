@@ -1,3 +1,4 @@
+using Unity.Collections.Tests.CoreCLR.TestJobs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,7 +30,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform wallCheckLeft;
     [SerializeField] private Transform wallCheckRight;
 
-    [SerializeField] private Vector2 wallCheckSize =
+    [SerializeField]
+    private Vector2 wallCheckSize =
     new Vector2(0.15f, 0.8f);
 
     [SerializeField] private LayerMask wallLayer;
@@ -149,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
                 horizontalInput += 1f;
             }
         }
-        
+
         // MANDO
         if (mando != null)
         {
@@ -165,7 +167,7 @@ public class PlayerMovement : MonoBehaviour
                 horizontalInput = stick;
             }
         }
-        
+
 
         // Guardar la ultima direccion de movimiento.
         if (horizontalInput != 0f)
@@ -178,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Keyboard teclado = Keyboard.current;
         Gamepad mando = Gamepad.current;
-        
+
         bool jumpPressedFrame = false;
         bool jumpRealeasedFrame = false;
         // Detectar cuando pulsamos ESP o el boton 'sur' del mando.
@@ -193,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
             jumpPressedFrame = true;
         }
 
-        if(jumpPressedFrame)
+        if (jumpPressedFrame)
         {
             jumpBufferCounter = jumpBufferTime;
         }
@@ -233,7 +235,7 @@ public class PlayerMovement : MonoBehaviour
         {
             dashPressed = true;
         }
-        if (mando != null && 
+        if (mando != null &&
             (mando.buttonWest.wasPressedThisFrame))
         {
             dashPressed = true;
@@ -393,7 +395,7 @@ public class PlayerMovement : MonoBehaviour
 
         isWallJumping = false;
 
-        
+
         Collider2D suelo = groundCheck != null
             ? Physics2D.OverlapBox(
                 groundCheck.position,

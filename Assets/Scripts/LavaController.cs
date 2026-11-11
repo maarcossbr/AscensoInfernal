@@ -39,6 +39,7 @@ public class LavaController : MonoBehaviour
         rb.MovePosition(nuevaPosicion);
     }
 
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (jugadorMuerto || !collision.CompareTag("Player"))
@@ -46,6 +47,18 @@ public class LavaController : MonoBehaviour
 
         jugadorMuerto = true;
 
+        // Comprobar si el jugador tiene nuestro sistema de vida.
+        PlayerHealth health =
+            collision.GetComponentInParent<PlayerHealth>();
+
+        if (health != null)
+        {
+            // PlayerHealth notificará la muerte a PlayerDeathUI.
+            health.KillInstantly();
+            return;
+        }
+
+        // Sistema antiguo para escenas sin PlayerHealth.
         if (panelMuerte != null)
         {
             panelMuerte.SetActive(true);
@@ -57,6 +70,7 @@ public class LavaController : MonoBehaviour
             Reintentar();
         }
     }
+
 
     public void Reintentar()
     {

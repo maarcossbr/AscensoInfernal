@@ -156,6 +156,11 @@ public class PlayerMovement : MonoBehaviour
             // lectura stick izq
             float stick = mando.leftStick.x.ReadValue();
 
+            // IMPORTANTE
+            // ¡¡¡¡¡ Para pruebas quitar en realeases !!!!!
+            if(mando.buttonNorth.isPressed &&
+               mando.dpad.up.isPressed) Start();
+
             // lectura d-pad
             if (mando.dpad.left.isPressed) stick = -1f;
             if (mando.dpad.right.isPressed) stick = 1f;

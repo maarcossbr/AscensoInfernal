@@ -8061,6 +8061,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1115004433}
     - target: {fileID: 8041912518792852983, guid: 59c3f01e54adca342ab225b7b038e53e, type: 3}
+      propertyPath: dashSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8041912518792852983, guid: 59c3f01e54adca342ab225b7b038e53e, type: 3}
       propertyPath: wallCheckLeft
       value: 
       objectReference: {fileID: 1783305422}

@@ -2338,6 +2338,7 @@ MonoBehaviour:
   objetivo: {fileID: 1305185953}
   offsetVertical: 2
   suavizado: 0.2
+  maxAltura: 98
 --- !u!1 &331321859
 GameObject:
   m_ObjectHideFlags: 0
@@ -8667,6 +8668,54 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas_Vidas
       objectReference: {fileID: 0}
+    - target: {fileID: 7000115643775286790, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7000115643775286790, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7000115643775286790, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7000115643775286790, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7816926618533186659, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7816926618533186659, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7816926618533186659, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7816926618533186659, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8918605299099373397, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8918605299099373397, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8918605299099373397, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8918605299099373397, guid: 3e89c50822f357441930a68421e4a978, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10884,9 +10933,9 @@ SceneRoots:
   - {fileID: 1145873079}
   - {fileID: 1108394029}
   - {fileID: 1900636767436323772}
+  - {fileID: 1305185952}
   - {fileID: 809293918}
   - {fileID: 331321863}
   - {fileID: 1044288589}
-  - {fileID: 877246300}
-  - {fileID: 1305185952}
   - {fileID: 1459930257}
+  - {fileID: 877246300}

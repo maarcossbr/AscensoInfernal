@@ -50,7 +50,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private int maxJumps = 2;
 
     [Header("Dash")]
-    [SerializeField] private float dashSpeed = 18f;
+    [SerializeField] private float dashSpeed = 10f;
     [SerializeField] private float dashDuration = 0.18f;
     [SerializeField] private float dashCooldown = 0.15f;
 

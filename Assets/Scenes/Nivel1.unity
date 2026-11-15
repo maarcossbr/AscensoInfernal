@@ -454,6 +454,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 89228642}
   m_CullTransparentMesh: 1
+--- !u!1 &105454079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 105454080}
+  - component: {fileID: 105454081}
+  m_Layer: 0
+  m_Name: GeneradorMeteoritos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &105454080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105454079}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1490920489}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &105454081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105454079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a58eac9ad36b3a543b001a429cbbfcd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GeneradorMeteoritos
+  pool: {fileID: 1490920488}
+  jugador: {fileID: 1305185953}
+  camara: {fileID: 330585545}
+  alturaSobreCamara: 2
+  margenHorizontal: 0.5
+  distanciaMinimaJugador: 2
 --- !u!1 &109034653
 GameObject:
   m_ObjectHideFlags: 0
@@ -8362,6 +8412,83 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2252988428449107817, guid: 4dd4787544dda3549949974c4c3c9d77, type: 3}
   m_PrefabInstance: {fileID: 1470135719}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1490920487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1490920489}
+  - component: {fileID: 1490920488}
+  - component: {fileID: 1490920490}
+  m_Layer: 0
+  m_Name: EventosDinamicos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1490920488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490920487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f770794242962f4b8fac4c0a8d4c7b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeteoritoPool
+  prefabMeteorito: {fileID: 7132566027579723491, guid: be1705b4574930b44bb12dbb13232c68, type: 3}
+  cantidadInicial: 20
+  maximoMeteoritos: 40
+--- !u!4 &1490920489
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490920487}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 105454080}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1490920490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490920487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fa7bb08b5c506f40b18d31499c8bd87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GestorEventosDinamicos
+  jugador: {fileID: 1305185953}
+  metaNivel: {fileID: 314882161}
+  generador: {fileID: 105454081}
+  oleadas:
+  - alturaActivacion: 30
+    intervalo: 1
+    velocidad: 7
+    dano: 1
+  - alturaActivacion: 60
+    intervalo: 0.75
+    velocidad: 7
+    dano: 1
+  - alturaActivacion: 85
+    intervalo: 0.5
+    velocidad: 5
+    dano: 1
 --- !u!1 &1494169535
 GameObject:
   m_ObjectHideFlags: 0
@@ -10243,3 +10370,4 @@ SceneRoots:
   - {fileID: 1044288589}
   - {fileID: 1459930257}
   - {fileID: 877246300}
+  - {fileID: 1490920489}

@@ -74,8 +74,13 @@ public class LavaController : MonoBehaviour
 
     public void Reintentar()
     {
+        // Restablecemos el progreso de las oleadas.
+        GestorEventosDinamicos.ReiniciarProgreso();
+
+        // Recuperamos el tiempo normal del juego.
         Time.timeScale = 1f;
 
+        // Recargamos la escena actual.
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );

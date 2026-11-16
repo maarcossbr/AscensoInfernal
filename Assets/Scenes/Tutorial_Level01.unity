@@ -189,87 +189,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2252988428449107817, guid: 4dd4787544dda3549949974c4c3c9d77, type: 3}
   m_PrefabInstance: {fileID: 30804871}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &47465252
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.33676
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 17.72552
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045119256600881025, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1727683451696880954, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: m_Name
-      value: SistemaMeteoritos
-      objectReference: {fileID: 0}
-    - target: {fileID: 5287920345215103115, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: jugador
-      value: 
-      objectReference: {fileID: 1305185953}
-    - target: {fileID: 5287920345215103115, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: generador
-      value: 
-      objectReference: {fileID: 1505354748}
-    - target: {fileID: 5287920345215103115, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: metaNivel
-      value: 
-      objectReference: {fileID: 314882161}
-    - target: {fileID: 7893554121435158112, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: pool
-      value: 
-      objectReference: {fileID: 1505354746}
-    - target: {fileID: 7893554121435158112, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: camara
-      value: 
-      objectReference: {fileID: 330585545}
-    - target: {fileID: 7893554121435158112, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-      propertyPath: jugador
-      value: 
-      objectReference: {fileID: 1305185953}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
 --- !u!1001 &53200637
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8939,28 +8858,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1494169535}
   m_CullTransparentMesh: 1
---- !u!114 &1505354746 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2372303779213236828, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-  m_PrefabInstance: {fileID: 47465252}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f770794242962f4b8fac4c0a8d4c7b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MeteoritoPool
---- !u!114 &1505354748 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7893554121435158112, guid: 1e1bd497b0f455c429381fa1746ee691, type: 3}
-  m_PrefabInstance: {fileID: 47465252}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a58eac9ad36b3a543b001a429cbbfcd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GeneradorMeteoritos
 --- !u!1001 &1510189921
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11046,4 +10943,3 @@ SceneRoots:
   - {fileID: 1044288589}
   - {fileID: 1459930257}
   - {fileID: 877246300}
-  - {fileID: 47465252}

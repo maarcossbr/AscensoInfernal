@@ -2289,6 +2289,9 @@ MonoBehaviour:
   offsetVertical: 2
   suavizado: 0.2
   maxAltura: 98
+  intensidadSacudida: 0.15
+  duracionSacudida: 0.45
+  frecuenciaSacudida: 20
 --- !u!1 &331321859
 GameObject:
   m_ObjectHideFlags: 0
@@ -8476,6 +8479,9 @@ MonoBehaviour:
   jugador: {fileID: 1305185953}
   metaNivel: {fileID: 314882161}
   generador: {fileID: 105454081}
+  camara: {fileID: 330585548}
+  intensidadSacudida: 0.15
+  duracionSacudida: 2.5
   oleadas:
   - alturaActivacion: 30
     intervalo: 1

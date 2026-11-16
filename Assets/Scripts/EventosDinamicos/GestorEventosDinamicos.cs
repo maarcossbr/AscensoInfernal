@@ -18,6 +18,11 @@ public class GestorEventosDinamicos : MonoBehaviour
     [SerializeField] private Transform jugador;
     [SerializeField] private Transform metaNivel;
     [SerializeField] private GeneradorMeteoritos generador;
+    [SerializeField] private Camara camara;
+
+    [Header("Configuracion del terremoto")]
+    [SerializeField] private float intensidadSacudida = 0.15f;
+    [SerializeField] private float duracionSacudida = 0.45f;
 
     [Header("Configuracion de oleadas")]
     [SerializeField] private ConfiguracionOleada[] oleadas =
@@ -91,6 +96,22 @@ public class GestorEventosDinamicos : MonoBehaviour
             if (iniciada)
             {
                 indiceOleadaEnCurso = i;
+
+                // Activamos el terremoto al comenzar la oleada.
+                if (camara != null)
+                {
+                    camara.IniciarSacudida(
+                        intensidadSacudida,
+                        duracionSacudida
+                    );
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        "GestorEventosDinamicos: No se ha asignado la camara.",
+                        this
+                    );
+                }
 
                 Debug.Log(
                     "GestorEventosDinamicos: Oleada "

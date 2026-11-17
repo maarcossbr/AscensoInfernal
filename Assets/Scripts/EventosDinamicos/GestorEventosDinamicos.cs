@@ -12,17 +12,20 @@ public class GestorEventosDinamicos : MonoBehaviour
         public float intervalo = 0.5f;
         public float velocidad = 9f;
         public int dano = 1;
+        [Min(1)] public int cantidadMeteoritos = 8;
     }
 
     [Header("Referencias")]
     [SerializeField] private Transform jugador;
-    [SerializeField] private Transform metaNivel;
     [SerializeField] private GeneradorMeteoritos generador;
     [SerializeField] private Camara camara;
 
     [Header("Configuracion del terremoto")]
     [SerializeField] private float intensidadSacudida = 0.15f;
-    [SerializeField] private float duracionSacudida = 0.45f;
+    [SerializeField] private float duracionSacudida = 2.5f;
+
+    [Header("Aviso antes de la lluvia")]
+    [Min(0f)] [SerializeField] private float retrasoMeteoritos = 1f;
 
     [Header("Configuracion de oleadas")]
     [SerializeField] private ConfiguracionOleada[] oleadas =
@@ -32,7 +35,8 @@ public class GestorEventosDinamicos : MonoBehaviour
             alturaActivacion = 30f,
             intervalo = 0.5f,
             velocidad = 9f,
-            dano = 1
+            dano = 1,
+            cantidadMeteoritos = 8
         },
 
         new ConfiguracionOleada
@@ -40,7 +44,8 @@ public class GestorEventosDinamicos : MonoBehaviour
             alturaActivacion = 60f,
             intervalo = 0.35f,
             velocidad = 9f,
-            dano = 1
+            dano = 1,
+            cantidadMeteoritos = 12
         },
 
         new ConfiguracionOleada
@@ -48,7 +53,8 @@ public class GestorEventosDinamicos : MonoBehaviour
             alturaActivacion = 85f,
             intervalo = 0.25f,
             velocidad = 9f,
-            dano = 1
+            dano = 1,
+            cantidadMeteoritos = 16
         }
     };
 
@@ -68,14 +74,36 @@ public class GestorEventosDinamicos : MonoBehaviour
         if (jugador == null || generador == null)
             return;
 
-        // Comprobamos si existe una oleada activa.
+        // Solo puede haber una oleada en curso. La siguiente espera
+        // a que terminen de caer todos los meteoritos de la anterior.
         if (indiceOleadaEnCurso != -1)
         {
-            ComprobarFinalOleada();
+            if (generador.OleadaEnCurso)
+                return;
+
+            if (generador.OleadaCompletada)
+            {
+                oleadasCompletadas[indiceOleadaEnCurso] = true;
+
+                Debug.Log(
+                    "GestorEventosDinamicos: Oleada "
+                    + (indiceOleadaEnCurso + 1) + " completada."
+                );
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "GestorEventosDinamicos: Oleada interrumpida; pendiente de reintentar.",
+                    this
+                );
+            }
+
+            indiceOleadaEnCurso = -1;
             return;
         }
 
-        // Buscamos la siguiente oleada pendiente.
+        // Las alturas solo disparan el comienzo de cada oleada.
+        // Una vez iniciada, se generan exactamente los meteoritos configurados.
         for (int i = 0; i < oleadas.Length; i++)
         {
             if (EstaCompletada(i))
@@ -86,84 +114,50 @@ public class GestorEventosDinamicos : MonoBehaviour
             if (jugador.position.y < configuracion.alturaActivacion)
                 return;
 
-            // Comenzamos la nueva oleada.
             bool iniciada = generador.IniciarOleada(
+                configuracion.cantidadMeteoritos,
+                retrasoMeteoritos,
                 configuracion.intervalo,
                 configuracion.velocidad,
                 configuracion.dano
             );
 
-            if (iniciada)
+            if (!iniciada)
+                return;
+
+            indiceOleadaEnCurso = i;
+
+            // El terremoto comienza ahora; la lluvia espera el tiempo de aviso.
+            if (camara != null)
             {
-                indiceOleadaEnCurso = i;
-
-                // Activamos el terremoto al comenzar la oleada.
-                if (camara != null)
-                {
-                    camara.IniciarSacudida(
-                        intensidadSacudida,
-                        duracionSacudida
-                    );
-                }
-                else
-                {
-                    Debug.LogWarning(
-                        "GestorEventosDinamicos: No se ha asignado la camara.",
-                        this
-                    );
-                }
-
-                Debug.Log(
-                    "GestorEventosDinamicos: Oleada "
-                    + (i + 1) + " iniciada."
+                camara.IniciarSacudida(
+                    intensidadSacudida,
+                    duracionSacudida
                 );
             }
+            else
+            {
+                Debug.LogWarning(
+                    "GestorEventosDinamicos: No se ha asignado la camara.",
+                    this
+                );
+            }
+
+            Debug.Log(
+                "GestorEventosDinamicos: Oleada "
+                + (i + 1) + " iniciada."
+            );
 
             return;
         }
     }
 
-    // Comprueba si el jugador ha alcanzado el final de la oleada.
-    private void ComprobarFinalOleada()
+    private void OnDisable()
     {
-        int indice = indiceOleadaEnCurso;
-
-        float alturaFinal;
-
-        if (indice < oleadas.Length - 1)
-        {
-            // Las dos primeras oleadas terminan al llegar a la siguiente.
-            alturaFinal = oleadas[indice + 1].alturaActivacion;
-        }
-        else
-        {
-            // La ultima oleada termina al alcanzar la meta.
-            if (metaNivel == null)
-            {
-                Debug.LogError(
-                    "GestorEventosDinamicos: No se ha asignado la meta.",
-                    this
-                );
-
-                return;
-            }
-
-            alturaFinal = metaNivel.position.y;
-        }
-
-        if (jugador.position.y >= alturaFinal)
-        {
+        if (indiceOleadaEnCurso != -1 && generador != null)
             generador.DetenerOleada();
 
-            oleadasCompletadas[indice] = true;
-
-            Debug.Log(
-                "GestorEventosDinamicos: Oleada "
-                + (indice + 1) + " completada."
-            );
-
-            indiceOleadaEnCurso = -1;
-        }
+        indiceOleadaEnCurso = -1;
     }
 
     private bool EstaCompletada(int indice)

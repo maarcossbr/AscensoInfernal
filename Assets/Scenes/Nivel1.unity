@@ -504,6 +504,8 @@ MonoBehaviour:
   alturaSobreCamara: 2
   margenHorizontal: 0.5
   distanciaMinimaJugador: 2
+  limiteXIzquierdo: -11
+  limiteXDerecho: 11
 --- !u!1 &109034653
 GameObject:
   m_ObjectHideFlags: 0
@@ -1707,7 +1709,7 @@ Transform:
   m_GameObject: {fileID: 314882160}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.5, y: 101.5, z: 0}
+  m_LocalPosition: {x: -4.92, y: 75.41, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8477,24 +8479,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GestorEventosDinamicos
   jugador: {fileID: 1305185953}
-  metaNivel: {fileID: 314882161}
   generador: {fileID: 105454081}
   camara: {fileID: 330585548}
   intensidadSacudida: 0.15
   duracionSacudida: 2.5
+  retrasoMeteoritos: 1
   oleadas:
   - alturaActivacion: 30
     intervalo: 1
     velocidad: 7
     dano: 1
+    cantidadMeteoritos: 8
   - alturaActivacion: 60
     intervalo: 0.75
     velocidad: 7
     dano: 1
+    cantidadMeteoritos: 12
   - alturaActivacion: 85
     intervalo: 0.5
     velocidad: 5
     dano: 1
+    cantidadMeteoritos: 16
 --- !u!1 &1494169535
 GameObject:
   m_ObjectHideFlags: 0

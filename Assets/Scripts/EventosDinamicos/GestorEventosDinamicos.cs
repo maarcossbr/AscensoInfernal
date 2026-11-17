@@ -12,45 +12,56 @@ public class GestorEventosDinamicos : MonoBehaviour
         public float intervalo = 0.5f;
         public float velocidad = 9f;
         public int dano = 1;
+
+        [Min(1)]
+        public int cantidadMeteoritos = 8;
     }
 
     [Header("Referencias")]
     [SerializeField] private Transform jugador;
-    [SerializeField] private Transform metaNivel;
     [SerializeField] private GeneradorMeteoritos generador;
     [SerializeField] private Camara camara;
 
     [Header("Configuracion del terremoto")]
     [SerializeField] private float intensidadSacudida = 0.15f;
     [SerializeField] private float duracionSacudida = 0.45f;
+    [Header("Retraso despues del terremoto")]
+    [Min(0f)]
+    [SerializeField] private float retrasoMeteoritos = 1f;
+
 
     [Header("Configuracion de oleadas")]
-    [SerializeField] private ConfiguracionOleada[] oleadas =
+    [SerializeField]
+    private ConfiguracionOleada[] oleadas =
     {
-        new ConfiguracionOleada
-        {
-            alturaActivacion = 30f,
-            intervalo = 0.5f,
-            velocidad = 9f,
-            dano = 1
-        },
+    new ConfiguracionOleada
+    {
+        alturaActivacion = 30f,
+        intervalo = 0.5f,
+        velocidad = 9f,
+        dano = 1,
+        cantidadMeteoritos = 8
+    },
 
-        new ConfiguracionOleada
-        {
-            alturaActivacion = 60f,
-            intervalo = 0.35f,
-            velocidad = 9f,
-            dano = 1
-        },
+    new ConfiguracionOleada
+    {
+        alturaActivacion = 60f,
+        intervalo = 0.35f,
+        velocidad = 9f,
+        dano = 1,
+        cantidadMeteoritos = 12
+    },
 
-        new ConfiguracionOleada
-        {
-            alturaActivacion = 85f,
-            intervalo = 0.25f,
-            velocidad = 9f,
-            dano = 1
-        }
-    };
+    new ConfiguracionOleada
+    {
+        alturaActivacion = 85f,
+        intervalo = 0.25f,
+        velocidad = 9f,
+        dano = 1,
+        cantidadMeteoritos = 16
+    }
+};
+
 
     private static bool[] oleadasCompletadas = new bool[3];
 
@@ -63,6 +74,7 @@ public class GestorEventosDinamicos : MonoBehaviour
         oleadasCompletadas = new bool[3];
     }
 
+
     private void Update()
     {
         if (jugador == null || generador == null)
@@ -71,7 +83,23 @@ public class GestorEventosDinamicos : MonoBehaviour
         // Comprobamos si existe una oleada activa.
         if (indiceOleadaEnCurso != -1)
         {
-            ComprobarFinalOleada();
+            // Esperamos mientras sigan generándose o cayendo meteoritos.
+            if (generador.OleadaEnCurso)
+                return;
+
+            // Comprobamos si la oleada ha terminado correctamente.
+            if (generador.OleadaCompletada)
+            {
+                oleadasCompletadas[indiceOleadaEnCurso] = true;
+
+                Debug.Log(
+                    "GestorEventosDinamicos: Oleada "
+                    + (indiceOleadaEnCurso + 1)
+                    + " completada."
+                );
+            }
+
+            indiceOleadaEnCurso = -1;
             return;
         }
 
@@ -86,83 +114,42 @@ public class GestorEventosDinamicos : MonoBehaviour
             if (jugador.position.y < configuracion.alturaActivacion)
                 return;
 
-            // Comenzamos la nueva oleada.
+            // Iniciamos la oleada con la cantidad y el retraso configurados.
             bool iniciada = generador.IniciarOleada(
+                configuracion.cantidadMeteoritos,
+                retrasoMeteoritos,
                 configuracion.intervalo,
                 configuracion.velocidad,
                 configuracion.dano
             );
 
-            if (iniciada)
+            if (!iniciada)
+                return;
+
+            indiceOleadaEnCurso = i;
+
+            // Activamos el terremoto al comenzar la oleada.
+            if (camara != null)
             {
-                indiceOleadaEnCurso = i;
-
-                // Activamos el terremoto al comenzar la oleada.
-                if (camara != null)
-                {
-                    camara.IniciarSacudida(
-                        intensidadSacudida,
-                        duracionSacudida
-                    );
-                }
-                else
-                {
-                    Debug.LogWarning(
-                        "GestorEventosDinamicos: No se ha asignado la camara.",
-                        this
-                    );
-                }
-
-                Debug.Log(
-                    "GestorEventosDinamicos: Oleada "
-                    + (i + 1) + " iniciada."
+                camara.IniciarSacudida(
+                    intensidadSacudida,
+                    duracionSacudida
                 );
             }
-
-            return;
-        }
-    }
-
-    // Comprueba si el jugador ha alcanzado el final de la oleada.
-    private void ComprobarFinalOleada()
-    {
-        int indice = indiceOleadaEnCurso;
-
-        float alturaFinal;
-
-        if (indice < oleadas.Length - 1)
-        {
-            // Las dos primeras oleadas terminan al llegar a la siguiente.
-            alturaFinal = oleadas[indice + 1].alturaActivacion;
-        }
-        else
-        {
-            // La ultima oleada termina al alcanzar la meta.
-            if (metaNivel == null)
+            else
             {
-                Debug.LogError(
-                    "GestorEventosDinamicos: No se ha asignado la meta.",
+                Debug.LogWarning(
+                    "GestorEventosDinamicos: No se ha asignado la camara.",
                     this
                 );
-
-                return;
             }
-
-            alturaFinal = metaNivel.position.y;
-        }
-
-        if (jugador.position.y >= alturaFinal)
-        {
-            generador.DetenerOleada();
-
-            oleadasCompletadas[indice] = true;
 
             Debug.Log(
                 "GestorEventosDinamicos: Oleada "
-                + (indice + 1) + " completada."
+                + (i + 1) + " iniciada."
             );
 
-            indiceOleadaEnCurso = -1;
+            return;
         }
     }
 

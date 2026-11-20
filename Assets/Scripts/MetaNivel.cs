@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 using System;
 
 public class MetaNivel : MonoBehaviour
@@ -83,4 +84,20 @@ public class MetaNivel : MonoBehaviour
 
         avisoActual = null;
     }
+    public void CargarSiguienteNivel(){
+    Time.timeScale = 1f;
+
+    int escenaActual = SceneManager.GetActiveScene().buildIndex;
+    int siguienteEscena = escenaActual + 1;
+
+    if (siguienteEscena < SceneManager.sceneCountInBuildSettings)
+    {
+        CheckpointRespawn.CancelarRespawn();
+        SceneManager.LoadScene(siguienteEscena);
+    }
+    else
+    {
+        Debug.LogWarning("No hay un siguiente nivel configurado.");
+    }
+}
 }

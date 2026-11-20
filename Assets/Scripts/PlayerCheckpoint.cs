@@ -18,6 +18,7 @@ public class PlayerCheckpoint : MonoBehaviour
     public float LavaSpeedAtCheckpoint { get; private set; }
     public bool HasLavaState { get; private set; }
     public string[] MineralesEnCheckpoint { get; private set; }
+    public bool DobleSaltoEnCheckpoint { get; private set; }
 
     public void ActivateCheckpoint(Vector3 position)
     {
@@ -30,6 +31,7 @@ public class PlayerCheckpoint : MonoBehaviour
         HealthAtCheckpoint = health.CurrentHealth;
         HasCheckpoint = true;
         MineralesEnCheckpoint = MineralCheckpointId.ObtenerRecogidos();
+        DobleSaltoEnCheckpoint = GetComponent<PlayerMovement>().TieneDobleSalto;
         HasLavaState = false;
 
         if (lava != null)

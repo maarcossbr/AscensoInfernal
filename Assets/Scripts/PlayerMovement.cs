@@ -48,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Doble salto")]
     [SerializeField] private int maxJumps = 2;
+    public bool TieneDobleSalto => maxJumps >= 2;
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 10f;
@@ -632,5 +633,10 @@ public class PlayerMovement : MonoBehaviour
                 wallCheckSize
             );
         }
+    }
+    // Desbloquear el doble salto al recoger el spray
+    public void DesbloquearDobleSalto(){
+        maxJumps = 2;
+        airJumpsRemaining = maxJumps - 1;
     }
 }

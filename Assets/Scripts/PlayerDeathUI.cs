@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -43,9 +42,7 @@ public class PlayerDeathUI : MonoBehaviour
         Debug.Log("Pantalla de muerte activada.");
     }
 
-
-
-
+    // Reaparece en el ultimo checkpoint.
     public void Reintentar()
     {
         PlayerCheckpoint checkpoint =
@@ -53,7 +50,6 @@ public class PlayerDeathUI : MonoBehaviour
 
         if (checkpoint != null && checkpoint.HasCheckpoint)
         {
-
             CheckpointRespawn.PrepararRespawn(
                 SceneManager.GetActiveScene().name,
                 checkpoint.LastCheckpointPosition,
@@ -63,13 +59,13 @@ public class PlayerDeathUI : MonoBehaviour
                 checkpoint.LavaSpeedAtCheckpoint,
                 checkpoint.MineralesEnCheckpoint
             );
-
         }
         else
         {
             CheckpointRespawn.CancelarRespawn();
         }
 
+        // No modificamos el progreso de las oleadas.
         Time.timeScale = 1f;
 
         SceneManager.LoadScene(
@@ -77,26 +73,28 @@ public class PlayerDeathUI : MonoBehaviour
         );
     }
 
+    // Regresa al menu y elimina el progreso de las oleadas.
     public void VolverAlMenu()
     {
+        CheckpointRespawn.CancelarRespawn();
+        GestorEventosDinamicos.ReiniciarProgreso();
+
         Time.timeScale = 1f;
 
         SceneManager.LoadScene("Menu_Inicio");
     }
 
-
+    // Reinicia completamente el nivel.
     public void ReiniciarNivel()
     {
-        // Olvidar el checkpoint y los datos del respawn.
         CheckpointRespawn.CancelarRespawn();
 
-        // Restaurar el tiempo normal del juego.
+        GestorEventosDinamicos.ReiniciarProgreso();
+
         Time.timeScale = 1f;
 
-        // Recargar el nivel desde cero.
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );
     }
-
 }

@@ -16,6 +16,7 @@ public class CheckpointRespawn : MonoBehaviour
     private static Vector2 posicionLavaGuardada;
     private static float velocidadLavaGuardada;
     private static string[] mineralesGuardados = System.Array.Empty<string>();
+    private static bool dobleSaltoGuardado;
 
     [RuntimeInitializeOnLoadMethod(
         RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -28,6 +29,7 @@ public class CheckpointRespawn : MonoBehaviour
         posicionLavaGuardada = Vector2.zero;
         velocidadLavaGuardada = 0f;
         mineralesGuardados = System.Array.Empty<string>();
+        dobleSaltoGuardado = false;
     }
 
 
@@ -44,6 +46,10 @@ public class CheckpointRespawn : MonoBehaviour
         mineralesGuardados = minerales != null
             ? (string[])minerales.Clone()
             : System.Array.Empty<string>();
+        
+        PlayerCheckpoint checkpoint = FindFirstObjectByType<PlayerCheckpoint>();
+        dobleSaltoGuardado = checkpoint != null && checkpoint.HasCheckpoint
+         && checkpoint.DobleSaltoEnCheckpoint;
 
         respawnPendiente = true;
     }
@@ -89,7 +95,10 @@ public class CheckpointRespawn : MonoBehaviour
 
         GetComponent<PlayerHealth>()
             .RestoreHealth(vidasGuardadas);
-
+        
+        if (dobleSaltoGuardado)
+            GetComponent<PlayerMovement>().DesbloquearDobleSalto();
+        
 
         GestorMinerales gestor = FindFirstObjectByType<GestorMinerales>();
 
@@ -128,5 +137,7 @@ public class CheckpointRespawn : MonoBehaviour
 
         return false;
     }
-
+    public static bool DobleSaltoGuardado(){
+         return SceneManager.GetActiveScene().name == escenaGuardada && dobleSaltoGuardado;
+    }
 }

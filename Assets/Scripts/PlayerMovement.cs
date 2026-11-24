@@ -1,4 +1,3 @@
-using Unity.Collections.Tests.CoreCLR.TestJobs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -30,8 +29,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform wallCheckLeft;
     [SerializeField] private Transform wallCheckRight;
 
-    [SerializeField]
-    private Vector2 wallCheckSize =
+    [SerializeField] private Vector2 wallCheckSize =
     new Vector2(0.15f, 0.8f);
 
     [SerializeField] private LayerMask wallLayer;
@@ -50,9 +48,10 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Doble salto")]
     [SerializeField] private int maxJumps = 2;
+    public bool TieneDobleSalto => maxJumps >= 2;
 
     [Header("Dash")]
-    [SerializeField] private float dashSpeed = 18f;
+    [SerializeField] private float dashSpeed = 10f;
     [SerializeField] private float dashDuration = 0.18f;
     [SerializeField] private float dashCooldown = 0.15f;
 
@@ -151,12 +150,17 @@ public class PlayerMovement : MonoBehaviour
                 horizontalInput += 1f;
             }
         }
-
+        
         // MANDO
         if (mando != null)
         {
             // lectura stick izq
             float stick = mando.leftStick.x.ReadValue();
+
+            // IMPORTANTE
+            // ¡¡¡¡¡ Para pruebas quitar en realeases !!!!!
+            if(mando.buttonNorth.isPressed &&
+               mando.dpad.up.isPressed) Start();
 
             // lectura d-pad
             if (mando.dpad.left.isPressed) stick = -1f;
@@ -167,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
                 horizontalInput = stick;
             }
         }
-
+        
 
         // Guardar la ultima direccion de movimiento.
         if (horizontalInput != 0f)
@@ -180,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Keyboard teclado = Keyboard.current;
         Gamepad mando = Gamepad.current;
-
+        
         bool jumpPressedFrame = false;
         bool jumpRealeasedFrame = false;
         // Detectar cuando pulsamos ESP o el boton 'sur' del mando.
@@ -195,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
             jumpPressedFrame = true;
         }
 
-        if (jumpPressedFrame)
+        if(jumpPressedFrame)
         {
             jumpBufferCounter = jumpBufferTime;
         }
@@ -235,7 +239,7 @@ public class PlayerMovement : MonoBehaviour
         {
             dashPressed = true;
         }
-        if (mando != null &&
+        if (mando != null && 
             (mando.buttonWest.wasPressedThisFrame))
         {
             dashPressed = true;
@@ -395,7 +399,7 @@ public class PlayerMovement : MonoBehaviour
 
         isWallJumping = false;
 
-
+        
         Collider2D suelo = groundCheck != null
             ? Physics2D.OverlapBox(
                 groundCheck.position,
@@ -629,5 +633,10 @@ public class PlayerMovement : MonoBehaviour
                 wallCheckSize
             );
         }
+    }
+    // Desbloquear el doble salto al recoger el spray
+    public void DesbloquearDobleSalto(){
+        maxJumps = 2;
+        airJumpsRemaining = maxJumps - 1;
     }
 }

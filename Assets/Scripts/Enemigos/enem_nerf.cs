@@ -1,15 +1,17 @@
-using System;
 using UnityEngine;
 
-public class enem_basico : MonoBehaviour
+public class enem_nerf : MonoBehaviour
 {
-     [Header("Configuracion Enemigo")]
+    [Header("Configuracion Enemigo")]
     public float velocidad = 0.5f;
     public float distancia = 2;
 
+    [Header("Debuff Salto")]
+    [SerializeField] private float duracionBloqueoSalto = 3f;
+
     private Rigidbody2D rb;
     private Vector2 posicionInicial;
-    private Boolean izq = true;
+    private bool izq = true;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
@@ -27,7 +29,7 @@ public class enem_basico : MonoBehaviour
         // Movimiento
         if (izq)
         {
-            Vector2 newPosition= rb.position + Vector2.left*velocidad*Time.fixedDeltaTime;
+            Vector2 newPosition = rb.position + Vector2.left * velocidad * Time.fixedDeltaTime;
             if (posicionInicial.x - distancia < rb.position.x)
             {
                 rb.MovePosition(newPosition);
@@ -35,14 +37,14 @@ public class enem_basico : MonoBehaviour
             else
             {
                 izq = false;
-                newPosition= rb.position + Vector2.right*velocidad*Time.fixedDeltaTime;
+                newPosition = rb.position + Vector2.right * velocidad * Time.fixedDeltaTime;
                 rb.MovePosition(newPosition);
 
             }
         }
         else
         {
-            Vector2 newPosition= rb.position + Vector2.right*velocidad*Time.fixedDeltaTime;
+            Vector2 newPosition = rb.position + Vector2.right * velocidad * Time.fixedDeltaTime;
             if (posicionInicial.x + distancia > rb.position.x)
             {
                 rb.MovePosition(newPosition);
@@ -50,11 +52,23 @@ public class enem_basico : MonoBehaviour
             else
             {
                 izq = true;
-                newPosition= rb.position + Vector2.left*velocidad*Time.fixedDeltaTime;
+                newPosition = rb.position + Vector2.left * velocidad * Time.fixedDeltaTime;
                 rb.MovePosition(newPosition);
 
             }
         }
     }
+    private void OnTriggerEnter2D(Collider2D other)
+{
+    AplicarDebuffSalto(other.gameObject);
+}
 
+private void AplicarDebuffSalto(GameObject objetivo)
+{
+    PlayerMovement jugador = objetivo.GetComponent<PlayerMovement>();
+    if (jugador != null)
+    {
+        jugador.BloquearSaltoTemporal(duracionBloqueoSalto);
+    }
+}
 }

@@ -7607,7 +7607,7 @@ PrefabInstance:
     - target: {fileID: 4257308009791436051, guid: 59c3f01e54adca342ab225b7b038e53e, type: 3}
       propertyPath: lava
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1895575261}
     - target: {fileID: 4295222014508210224, guid: 59c3f01e54adca342ab225b7b038e53e, type: 3}
       propertyPath: m_Name
       value: Player
@@ -10484,6 +10484,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5fde3f68dfa3db843aafc495fadc7d6a, type: 3}
+--- !u!114 &1895575261 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6758660701225229828, guid: 5fde3f68dfa3db843aafc495fadc7d6a, type: 3}
+  m_PrefabInstance: {fileID: 1895575260}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52bce961b99140d4f8bf196f13ecc839, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AscensoInfernal.Runtime::LavaController
 --- !u!1001 &1943850007
 PrefabInstance:
   m_ObjectHideFlags: 0

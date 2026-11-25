@@ -1,3 +1,4 @@
+
 using System.Collections;
 using UnityEngine;
 
@@ -21,13 +22,13 @@ public class GeneradorMeteoritos : MonoBehaviour
     private Coroutine rutinaOleada;
 
     public bool OleadaEnCurso => oleadaEnCurso;
+
+    // Se conserva por compatibilidad con el codigo anterior.
+    // Las lluvias continuas no tienen una finalizacion automatica.
     public bool OleadaCompletada { get; private set; }
 
-
-    // Inicia una lluvia continua de meteoritos.
-
-    public bool IniciarOleada(
-        int cantidad,
+    // Inicia una lluvia continua.
+    public bool IniciarLluvia(
         float retrasoInicial,
         float intervalo,
         float velocidad,
@@ -36,7 +37,7 @@ public class GeneradorMeteoritos : MonoBehaviour
         if (oleadaEnCurso)
         {
             Debug.LogWarning(
-                "GeneradorMeteoritos: Ya hay una oleada en curso.",
+                "GeneradorMeteoritos: Ya hay una lluvia activa.",
                 this
             );
 
@@ -53,7 +54,6 @@ public class GeneradorMeteoritos : MonoBehaviour
             return false;
         }
 
-        cantidad = Mathf.Max(1, cantidad);
         retrasoInicial = Mathf.Max(0f, retrasoInicial);
         intervalo = Mathf.Max(0.1f, intervalo);
         velocidad = Mathf.Max(0.1f, velocidad);
@@ -63,8 +63,7 @@ public class GeneradorMeteoritos : MonoBehaviour
         oleadaEnCurso = true;
 
         rutinaOleada = StartCoroutine(
-            GenerarOleada(
-                cantidad,
+            GenerarLluvia(
                 retrasoInicial,
                 intervalo,
                 velocidad,
@@ -75,27 +74,37 @@ public class GeneradorMeteoritos : MonoBehaviour
         return true;
     }
 
-
-
-    // Genera una cantidad limitada de meteoritos tras el terremoto.
-    private IEnumerator GenerarOleada(
+    // Metodo anterior conservado para no romper llamadas existentes.
+    // El parametro cantidad deja de limitar la generacion.
+    public bool IniciarOleada(
         int cantidad,
         float retrasoInicial,
         float intervalo,
         float velocidad,
         int nuevoDano)
     {
-        // Esperamos antes de que empiecen a caer los meteoritos.
-        yield return new WaitForSeconds(retrasoInicial);
+        return IniciarLluvia(
+            retrasoInicial,
+            intervalo,
+            velocidad,
+            nuevoDano
+        );
+    }
 
-        int meteoritosGenerados = 0;
+    private IEnumerator GenerarLluvia(
+        float retrasoInicial,
+        float intervalo,
+        float velocidad,
+        int nuevoDano)
+    {
+        if (retrasoInicial > 0f)
+            yield return new WaitForSeconds(retrasoInicial);
 
         Debug.Log(
-            "GeneradorMeteoritos: Comienza la lluvia de meteoritos."
+            "GeneradorMeteoritos: Comienza la lluvia continua."
         );
 
-        // Generamos solamente la cantidad configurada.
-        while (oleadaEnCurso && meteoritosGenerados < cantidad)
+        while (oleadaEnCurso)
         {
             Vector3 posicion = ObtenerPosicionAparicion();
 
@@ -107,79 +116,45 @@ public class GeneradorMeteoritos : MonoBehaviour
 
             if (meteorito != null)
             {
-                meteoritosGenerados++;
-
                 Debug.Log(
-                    "Meteoritos generados: "
-                    + meteoritosGenerados + "/" + cantidad
-                );
-            }
-            else
-            {
-                Debug.LogWarning(
-                    "GeneradorMeteoritos: No hay meteoritos disponibles."
+                    "GeneradorMeteoritos: Meteorito generado."
                 );
             }
 
-            if (meteoritosGenerados < cantidad)
-            {
-                yield return new WaitForSeconds(intervalo);
-            }
+            yield return new WaitForSeconds(intervalo);
         }
 
-        // Esperamos a que desaparezcan los meteoritos que siguen cayendo.
-        while (oleadaEnCurso &&
-               pool.ObtenerCantidadDisponible() < pool.ObtenerCantidadTotal())
-        {
-            yield return null;
-        }
-
-        // Marcamos la oleada como completada.
-        oleadaEnCurso = false;
-        OleadaCompletada = true;
         rutinaOleada = null;
-
-        Debug.Log(
-            "GeneradorMeteoritos: Oleada completada con "
-            + meteoritosGenerados + " meteoritos."
-        );
     }
 
-
-    // Detiene la generacion continua de meteoritos.
-
+    // Detiene la generacion de nuevos meteoritos.
+    // Los meteoritos que ya estan activos siguen su trayectoria.
     public void DetenerOleada()
     {
-        if (!oleadaEnCurso)
-            return;
-
-        oleadaEnCurso = false;
-        OleadaCompletada = false;
-
         if (rutinaOleada != null)
         {
             StopCoroutine(rutinaOleada);
             rutinaOleada = null;
         }
 
+        if (!oleadaEnCurso)
+            return;
+
+        oleadaEnCurso = false;
+        OleadaCompletada = false;
+
         Debug.Log(
-            "GeneradorMeteoritos: Oleada detenida."
+            "GeneradorMeteoritos: Lluvia detenida."
         );
     }
-
 
     private void OnDisable()
     {
         DetenerOleada();
     }
 
-
-    // Calcula una posicion aleatoria encima de la camara.
     private Vector3 ObtenerPosicionAparicion()
     {
-
-        float alturaCamara = camara.orthographicSize;
-
         float limiteIzquierdo =
             limiteXIzquierdo + margenHorizontal;
 
@@ -210,17 +185,19 @@ public class GeneradorMeteoritos : MonoBehaviour
 
         float posicionY =
             camara.transform.position.y
-            + alturaCamara
+            + camara.orthographicSize
             + alturaSobreCamara;
 
         return new Vector3(posicionX, posicionY, 0f);
     }
 
-
     private void OnDrawGizmos()
     {
-        float izquierda = limiteXIzquierdo + margenHorizontal;
-        float derecha = limiteXDerecho - margenHorizontal;
+        float izquierda =
+            limiteXIzquierdo + margenHorizontal;
+
+        float derecha =
+            limiteXDerecho - margenHorizontal;
 
         float centroY = camara != null
             ? camara.transform.position.y
@@ -230,26 +207,25 @@ public class GeneradorMeteoritos : MonoBehaviour
             ? camara.orthographicSize + alturaSobreCamara
             : 10f;
 
-        // Limite izquierdo (rojo)
         Gizmos.color = Color.red;
+
         Gizmos.DrawLine(
             new Vector3(izquierda, centroY - altura, 0f),
             new Vector3(izquierda, centroY + altura, 0f)
         );
 
-        // Limite derecho (verde)
         Gizmos.color = Color.green;
+
         Gizmos.DrawLine(
             new Vector3(derecha, centroY - altura, 0f),
             new Vector3(derecha, centroY + altura, 0f)
         );
 
-        // Linea horizontal que une ambos limites
         Gizmos.color = Color.yellow;
+
         Gizmos.DrawLine(
             new Vector3(izquierda, centroY, 0f),
             new Vector3(derecha, centroY, 0f)
         );
     }
-
 }

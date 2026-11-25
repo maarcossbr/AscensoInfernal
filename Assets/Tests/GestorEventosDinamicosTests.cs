@@ -1,4 +1,5 @@
 
+using System;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -22,17 +23,8 @@ public class GestorEventosDinamicosTests
     [SetUp]
     public void SetUp()
     {
-        LogAssert.Expect(
-            LogType.Log,
-            "GestorEventosDinamicos: Progreso de oleadas restablecido."
-        );
-
-        GestorEventosDinamicos.ReiniciarProgreso();
-
-        // Crear jugador
         jugadorObject = new GameObject("Player_Test");
 
-        // Crear camara
         camaraObject = new GameObject("Camara_Test");
         camara = camaraObject.AddComponent<Camara>();
 
@@ -40,13 +32,11 @@ public class GestorEventosDinamicosTests
         unityCamera.orthographic = true;
         unityCamera.orthographicSize = 5f;
 
-        // Crear prefab
         prefabObject = new GameObject("Meteorito_Prefab_Test");
         prefabObject.AddComponent<Rigidbody2D>();
         prefab = prefabObject.AddComponent<Meteorito>();
         prefabObject.SetActive(false);
 
-        // Crear pool
         poolObject = new GameObject("Pool_Test");
         poolObject.SetActive(false);
 
@@ -63,7 +53,6 @@ public class GestorEventosDinamicosTests
 
         poolObject.SetActive(true);
 
-        // Crear generador
         generadorObject = new GameObject("Generador_Test");
         generador = generadorObject.AddComponent<GeneradorMeteoritos>();
 
@@ -71,33 +60,112 @@ public class GestorEventosDinamicosTests
         SetPrivateField(generador, "jugador", jugadorObject.transform);
         SetPrivateField(generador, "camara", unityCamera);
 
-        // Crear gestor
-        gestorObject = new GameObject("Gestor_Test");
-        gestor = gestorObject.AddComponent<GestorEventosDinamicos>();
+        gestor = CrearGestor();
 
-        SetPrivateField(gestor, "jugador", jugadorObject.transform);
-        SetPrivateField(gestor, "generador", generador);
-        SetPrivateField(gestor, "camara", camara);
-
-        // Evitar que las corrutinas generen meteoritos durante estas pruebas.
         SetPrivateField(gestor, "retrasoMeteoritos", 1f);
+
+        ConfigurarOleadas(
+            gestor,
+            10f,
+            30f,
+            60f,
+            90f
+        );
     }
 
     [TearDown]
     public void TearDown()
     {
-        // Evitar logs de detencion durante la destruccion.
-        if (generador != null)
+        DetenerCorrutinaGenerador();
+
+        if (gestorObject != null)
+            UnityEngine.Object.DestroyImmediate(gestorObject);
+
+        if (generadorObject != null)
+            UnityEngine.Object.DestroyImmediate(generadorObject);
+
+        if (poolObject != null)
+            UnityEngine.Object.DestroyImmediate(poolObject);
+
+        if (prefabObject != null)
+            UnityEngine.Object.DestroyImmediate(prefabObject);
+
+        if (jugadorObject != null)
+            UnityEngine.Object.DestroyImmediate(jugadorObject);
+
+        if (camaraObject != null)
+            UnityEngine.Object.DestroyImmediate(camaraObject);
+    }
+
+    private GestorEventosDinamicos CrearGestor()
+    {
+        gestorObject = new GameObject("Gestor_Test");
+
+        GestorEventosDinamicos nuevoGestor =
+            gestorObject.AddComponent<GestorEventosDinamicos>();
+
+        SetPrivateField(
+            nuevoGestor,
+            "jugador",
+            jugadorObject.transform
+        );
+
+        SetPrivateField(
+            nuevoGestor,
+            "generador",
+            generador
+        );
+
+        SetPrivateField(
+            nuevoGestor,
+            "camara",
+            camara
+        );
+
+        return nuevoGestor;
+    }
+
+    private void ConfigurarOleadas(
+        GestorEventosDinamicos objetivo,
+        params float[] alturas)
+    {
+        Type tipoConfiguracion =
+            typeof(GestorEventosDinamicos).GetNestedType(
+                "ConfiguracionOleada",
+                BindingFlags.NonPublic
+            );
+
+        Assert.IsNotNull(tipoConfiguracion);
+
+        Array configuraciones = Array.CreateInstance(
+            tipoConfiguracion,
+            alturas.Length
+        );
+
+        for (int i = 0; i < alturas.Length; i++)
         {
-            SetPrivateField(generador, "oleadaEnCurso", false);
+            object configuracion =
+                Activator.CreateInstance(tipoConfiguracion);
+
+            tipoConfiguracion.GetField("alturaActivacion")
+                .SetValue(configuracion, alturas[i]);
+
+            tipoConfiguracion.GetField("intervalo")
+                .SetValue(configuracion, 0.5f);
+
+            tipoConfiguracion.GetField("velocidad")
+                .SetValue(configuracion, 9f);
+
+            tipoConfiguracion.GetField("dano")
+                .SetValue(configuracion, 1);
+
+            tipoConfiguracion.GetField("cantidadMeteoritos")
+                .SetValue(configuracion, 1);
+
+            configuraciones.SetValue(configuracion, i);
         }
 
-        Object.DestroyImmediate(gestorObject);
-        Object.DestroyImmediate(generadorObject);
-        Object.DestroyImmediate(poolObject);
-        Object.DestroyImmediate(prefabObject);
-        Object.DestroyImmediate(jugadorObject);
-        Object.DestroyImmediate(camaraObject);
+        SetPrivateField(objetivo, "oleadas", configuraciones);
     }
 
     private void SetPrivateField(
@@ -135,7 +203,7 @@ public class GestorEventosDinamicosTests
         return (T)field.GetValue(target);
     }
 
-    private void InvokeUpdate()
+    private void InvokeUpdate(GestorEventosDinamicos objetivo)
     {
         MethodInfo method = typeof(GestorEventosDinamicos).GetMethod(
             "Update",
@@ -144,22 +212,7 @@ public class GestorEventosDinamicosTests
 
         Assert.IsNotNull(method);
 
-        method.Invoke(gestor, null);
-    }
-
-    private bool IsWaveCompleted(int index)
-    {
-        MethodInfo method = typeof(GestorEventosDinamicos).GetMethod(
-            "EstaCompletada",
-            BindingFlags.NonPublic | BindingFlags.Instance
-        );
-
-        Assert.IsNotNull(method);
-
-        return (bool)method.Invoke(
-            gestor,
-            new object[] { index }
-        );
+        method.Invoke(objetivo, null);
     }
 
     private void ExpectWaveStart(int number)
@@ -178,31 +231,56 @@ public class GestorEventosDinamicosTests
 
     private void SimulateWaveCompletion()
     {
-        SetPrivateField(generador, "oleadaEnCurso", false);
+        DetenerCorrutinaGenerador();
 
-        PropertyInfo property = typeof(GeneradorMeteoritos).GetProperty(
-            "OleadaCompletada"
+        SetPrivateField(
+            generador,
+            "oleadaEnCurso",
+            false
         );
+
+        PropertyInfo property =
+            typeof(GeneradorMeteoritos).GetProperty(
+                "OleadaCompletada"
+            );
 
         Assert.IsNotNull(property);
 
-        FieldInfo backingField = typeof(GeneradorMeteoritos).GetField(
-            "<OleadaCompletada>k__BackingField",
-            BindingFlags.NonPublic | BindingFlags.Instance
-        );
+        FieldInfo backingField =
+            typeof(GeneradorMeteoritos).GetField(
+                "<OleadaCompletada>k__BackingField",
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
 
         Assert.IsNotNull(backingField);
 
         backingField.SetValue(generador, true);
     }
 
+    private void DetenerCorrutinaGenerador()
+    {
+        if (generador == null)
+            return;
+
+        Coroutine rutina = GetPrivateField<Coroutine>(
+            generador,
+            "rutinaOleada"
+        );
+
+        if (rutina != null)
+            generador.StopCoroutine(rutina);
+
+        SetPrivateField(generador, "rutinaOleada", null);
+        SetPrivateField(generador, "oleadaEnCurso", false);
+    }
+
     [Test]
     public void Update_BelowFirstThreshold_DoesNotStartWave()
     {
         jugadorObject.transform.position =
-            new Vector3(0f, 29f, 0f);
+            new Vector3(0f, 5f, 0f);
 
-        InvokeUpdate();
+        InvokeUpdate(gestor);
 
         Assert.AreEqual(
             -1,
@@ -216,17 +294,17 @@ public class GestorEventosDinamicosTests
     }
 
     [Test]
-    public void Update_StartsFirstWaveAtRequiredHeight()
+    public void Update_SelectsHighestReachedWave()
     {
         jugadorObject.transform.position =
-            new Vector3(0f, 30f, 0f);
+            new Vector3(0f, 45f, 0f);
 
-        ExpectWaveStart(1);
+        ExpectWaveStart(2);
 
-        InvokeUpdate();
+        InvokeUpdate(gestor);
 
         Assert.AreEqual(
-            0,
+            1,
             GetPrivateField<int>(
                 gestor,
                 "indiceOleadaEnCurso"
@@ -237,49 +315,22 @@ public class GestorEventosDinamicosTests
     }
 
     [Test]
-    public void Update_DoesNotStartAnotherWaveWhileOneIsActive()
+    public void Update_DoesNotRepeatCompletedWaveDuringSameLife()
     {
         jugadorObject.transform.position =
-            new Vector3(0f, 30f, 0f);
+            new Vector3(0f, 45f, 0f);
 
-        ExpectWaveStart(1);
-        InvokeUpdate();
-
-        jugadorObject.transform.position =
-            new Vector3(0f, 60f, 0f);
-
-        InvokeUpdate();
-
-        Assert.AreEqual(
-            0,
-            GetPrivateField<int>(
-                gestor,
-                "indiceOleadaEnCurso"
-            )
-        );
-
-        Assert.IsTrue(generador.OleadaEnCurso);
-    }
-
-    [Test]
-    public void Update_CompletesFirstWaveAndStartsSecond()
-    {
-        jugadorObject.transform.position =
-            new Vector3(0f, 30f, 0f);
-
-        ExpectWaveStart(1);
-        InvokeUpdate();
+        ExpectWaveStart(2);
+        InvokeUpdate(gestor);
 
         SimulateWaveCompletion();
 
         LogAssert.Expect(
             LogType.Log,
-            "GestorEventosDinamicos: Oleada 1 completada."
+            "GestorEventosDinamicos: Oleada 2 completada."
         );
 
-        InvokeUpdate();
-
-        Assert.IsTrue(IsWaveCompleted(0));
+        InvokeUpdate(gestor);
 
         Assert.AreEqual(
             -1,
@@ -289,11 +340,36 @@ public class GestorEventosDinamicosTests
             )
         );
 
+        // Seguimos en el mismo tramo.
+        // La oleada no debe repetirse.
+        InvokeUpdate(gestor);
+
+        Assert.IsFalse(generador.OleadaEnCurso);
+    }
+
+    [Test]
+    public void Update_StartsNextWaveAfterCrossingNextThreshold()
+    {
         jugadorObject.transform.position =
-            new Vector3(0f, 60f, 0f);
+            new Vector3(0f, 20f, 0f);
+
+        ExpectWaveStart(1);
+        InvokeUpdate(gestor);
+
+        SimulateWaveCompletion();
+
+        LogAssert.Expect(
+            LogType.Log,
+            "GestorEventosDinamicos: Oleada 1 completada."
+        );
+
+        InvokeUpdate(gestor);
+
+        jugadorObject.transform.position =
+            new Vector3(0f, 45f, 0f);
 
         ExpectWaveStart(2);
-        InvokeUpdate();
+        InvokeUpdate(gestor);
 
         Assert.AreEqual(
             1,
@@ -305,32 +381,14 @@ public class GestorEventosDinamicosTests
     }
 
     [Test]
-    public void Update_ProgressesThroughAllThreeWaves()
+    public void NewManager_ReactivatesWaveAtCheckpointHeight()
     {
-        // Primera oleada
+        // Simulamos que el jugador estaba en la segunda zona.
         jugadorObject.transform.position =
-            new Vector3(0f, 30f, 0f);
-
-        ExpectWaveStart(1);
-        InvokeUpdate();
-
-        SimulateWaveCompletion();
-
-        LogAssert.Expect(
-            LogType.Log,
-            "GestorEventosDinamicos: Oleada 1 completada."
-        );
-
-        InvokeUpdate();
-
-        Assert.IsTrue(IsWaveCompleted(0));
-
-        // Segunda oleada
-        jugadorObject.transform.position =
-            new Vector3(0f, 60f, 0f);
+            new Vector3(0f, 45f, 0f);
 
         ExpectWaveStart(2);
-        InvokeUpdate();
+        InvokeUpdate(gestor);
 
         SimulateWaveCompletion();
 
@@ -339,30 +397,65 @@ public class GestorEventosDinamicosTests
             "GestorEventosDinamicos: Oleada 2 completada."
         );
 
-        InvokeUpdate();
+        InvokeUpdate(gestor);
 
-        Assert.IsTrue(IsWaveCompleted(1));
+        Assert.IsFalse(generador.OleadaEnCurso);
 
-        // Tercera oleada
-        jugadorObject.transform.position =
-            new Vector3(0f, 85f, 0f);
+        // Simulamos la recarga de la escena.
+        UnityEngine.Object.DestroyImmediate(gestorObject);
+        gestorObject = null;
 
-        ExpectWaveStart(3);
-        InvokeUpdate();
+        GestorEventosDinamicos nuevoGestor = CrearGestor();
 
-        SimulateWaveCompletion();
-
-        LogAssert.Expect(
-            LogType.Log,
-            "GestorEventosDinamicos: Oleada 3 completada."
+        SetPrivateField(
+            nuevoGestor,
+            "retrasoMeteoritos",
+            1f
         );
 
-        InvokeUpdate();
+        ConfigurarOleadas(
+            nuevoGestor,
+            10f,
+            30f,
+            60f,
+            90f
+        );
 
-        Assert.IsTrue(IsWaveCompleted(2));
+        // El jugador reaparece en el mismo checkpoint.
+        ExpectWaveStart(2);
+        InvokeUpdate(nuevoGestor);
 
         Assert.AreEqual(
-            -1,
+            1,
+            GetPrivateField<int>(
+                nuevoGestor,
+                "indiceOleadaEnCurso"
+            )
+        );
+
+        Assert.IsTrue(generador.OleadaEnCurso);
+    }
+
+    [Test]
+    public void Update_AdaptsToDifferentNumberOfWaves()
+    {
+        ConfigurarOleadas(
+            gestor,
+            10f,
+            20f,
+            30f,
+            40f,
+            50f
+        );
+
+        jugadorObject.transform.position =
+            new Vector3(0f, 45f, 0f);
+
+        ExpectWaveStart(4);
+        InvokeUpdate(gestor);
+
+        Assert.AreEqual(
+            3,
             GetPrivateField<int>(
                 gestor,
                 "indiceOleadaEnCurso"
@@ -371,48 +464,29 @@ public class GestorEventosDinamicosTests
     }
 
     [Test]
-    public void ReiniciarProgreso_ResetsCompletedWaves()
-    {
-        jugadorObject.transform.position =
-            new Vector3(0f, 30f, 0f);
-
-        ExpectWaveStart(1);
-        InvokeUpdate();
-
-        SimulateWaveCompletion();
-
-        LogAssert.Expect(
-            LogType.Log,
-            "GestorEventosDinamicos: Oleada 1 completada."
-        );
-
-        InvokeUpdate();
-
-        Assert.IsTrue(IsWaveCompleted(0));
-
-        LogAssert.Expect(
-            LogType.Log,
-            "GestorEventosDinamicos: Progreso de oleadas restablecido."
-        );
-
-        GestorEventosDinamicos.ReiniciarProgreso();
-
-        Assert.IsFalse(IsWaveCompleted(0));
-        Assert.IsFalse(IsWaveCompleted(1));
-        Assert.IsFalse(IsWaveCompleted(2));
-    }
-
-    [Test]
     public void Update_MissingPlayerOrGenerator_DoesNothing()
     {
         SetPrivateField(gestor, "jugador", null);
 
-        Assert.DoesNotThrow(InvokeUpdate);
+        Assert.DoesNotThrow(
+            () => InvokeUpdate(gestor)
+        );
 
-        SetPrivateField(gestor, "jugador", jugadorObject.transform);
-        SetPrivateField(gestor, "generador", null);
+        SetPrivateField(
+            gestor,
+            "jugador",
+            jugadorObject.transform
+        );
 
-        Assert.DoesNotThrow(InvokeUpdate);
+        SetPrivateField(
+            gestor,
+            "generador",
+            null
+        );
+
+        Assert.DoesNotThrow(
+            () => InvokeUpdate(gestor)
+        );
 
         Assert.AreEqual(
             -1,

@@ -531,8 +531,13 @@ public class PlayerMovement : MonoBehaviour
     // DASH
     // ------------------------------------------------
 
+    
     private void TryStartDash()
     {
+        // No permitir el dash si la habilidad no esta configurada.
+        if (dashSpeed <= 0f || dashDuration <= 0f)
+            return;
+
         // Comprobar que podemos realizar otro dash.
         if (!canDash || dashCooldownTimer > 0f)
             return;
@@ -550,12 +555,13 @@ public class PlayerMovement : MonoBehaviour
         // Desactivar temporalmente la gravedad.
         rb.gravityScale = 0f;
 
-        // El dash es horizontal: anulamos la velocidad vertical.
+        // Anular la velocidad vertical.
         rb.linearVelocity = new Vector2(
             dashDirection * dashSpeed,
             0f
         );
     }
+
 
     private void UpdateDash()
     {

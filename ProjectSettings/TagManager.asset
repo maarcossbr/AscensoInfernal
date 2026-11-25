@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - Cabeza
+  - Enemigo
+  - enredadera
   layers:
   - Default
   - TransparentFX

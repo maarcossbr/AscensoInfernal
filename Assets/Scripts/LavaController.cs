@@ -5,8 +5,10 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class LavaController : MonoBehaviour
 {
+    [Header("Velocidad de la lava")]
     public float baseSpeed = 0.6f;
     public float acceleration = 0.02f;
+    public float maxSpeed = 2f;
 
     public float currentSpeed;
 
@@ -23,6 +25,10 @@ public class LavaController : MonoBehaviour
 
     private void Start()
     {
+        // La velocidad maxima nunca puede ser inferior
+        // a la velocidad inicial.
+        maxSpeed = Mathf.Max(baseSpeed, maxSpeed);
+
         currentSpeed = baseSpeed;
 
         if (panelMuerte != null)
@@ -31,7 +37,13 @@ public class LavaController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        currentSpeed += acceleration * Time.fixedDeltaTime;
+        // Aumentar la velocidad progresivamente sin superar
+        // el limite establecido.
+        currentSpeed = Mathf.MoveTowards(
+            currentSpeed,
+            maxSpeed,
+            acceleration * Time.fixedDeltaTime
+        );
 
         Vector2 nuevaPosicion = rb.position +
             Vector2.up * currentSpeed * Time.fixedDeltaTime;
@@ -69,10 +81,8 @@ public class LavaController : MonoBehaviour
 
     public void Reintentar()
     {
-        // Recuperamos el tiempo normal del juego.
         Time.timeScale = 1f;
 
-        // La nueva instancia del gestor inicializara las oleadas.
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );

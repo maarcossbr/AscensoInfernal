@@ -65,6 +65,15 @@ public class GestorEventosDinamicos : MonoBehaviour
 
     private int indiceOleadaActiva = -1;
 
+    // Registra si cada zona ya ha provocado un temblor.
+    private bool[] tembloresRealizados;
+
+    private void Awake()
+    {
+        // Inicializar el registro segun el numero de zonas.
+        tembloresRealizados = new bool[oleadas.Length];
+    }
+
     private void Update()
     {
         if (jugador == null || generador == null)
@@ -118,19 +127,26 @@ public class GestorEventosDinamicos : MonoBehaviour
             return;
         }
 
-        if (camara != null)
+        // El temblor solo se produce la primera vez
+        // que se activa cada zona.
+        if (!tembloresRealizados[indice])
         {
-            camara.IniciarSacudida(
-                intensidadSacudida,
-                duracionSacudida
-            );
-        }
-        else
-        {
-            Debug.LogWarning(
-                "GestorEventosDinamicos: No se ha asignado la camara.",
-                this
-            );
+            if (camara != null)
+            {
+                camara.IniciarSacudida(
+                    intensidadSacudida,
+                    duracionSacudida
+                );
+
+                tembloresRealizados[indice] = true;
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "GestorEventosDinamicos: No se ha asignado la camara.",
+                    this
+                );
+            }
         }
 
         Debug.Log(

@@ -269,11 +269,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6523385097744479677, guid: b610aa9ddbe1ee04aa644add42c98a8f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.95
+      value: 8.69
       objectReference: {fileID: 0}
     - target: {fileID: 6523385097744479677, guid: b610aa9ddbe1ee04aa644add42c98a8f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 52.44
+      value: 52.6
       objectReference: {fileID: 0}
     - target: {fileID: 6523385097744479677, guid: b610aa9ddbe1ee04aa644add42c98a8f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -971,7 +971,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2252988428449107817, guid: 4dd4787544dda3549949974c4c3c9d77, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.68
+      value: 5.04
       objectReference: {fileID: 0}
     - target: {fileID: 2252988428449107817, guid: 4dd4787544dda3549949974c4c3c9d77, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4170,7 +4170,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2574844592660613175, guid: 831499d472734a74490655c223717922, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.61
+      value: -3.64
       objectReference: {fileID: 0}
     - target: {fileID: 2574844592660613175, guid: 831499d472734a74490655c223717922, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4580,7 +4580,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2574844592660613175, guid: 831499d472734a74490655c223717922, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.09
+      value: 3.13
       objectReference: {fileID: 0}
     - target: {fileID: 2574844592660613175, guid: 831499d472734a74490655c223717922, type: 3}
       propertyPath: m_LocalPosition.y
@@ -8888,7 +8888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2252988428449107817, guid: 4dd4787544dda3549949974c4c3c9d77, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.97
+      value: -8.05
       objectReference: {fileID: 0}
     - target: {fileID: 2252988428449107817, guid: 4dd4787544dda3549949974c4c3c9d77, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9004,12 +9004,12 @@ MonoBehaviour:
   duracionSacudida: 2.5
   retrasoMeteoritos: 1
   oleadas:
-  - alturaActivacion: 30
+  - alturaActivacion: 20
     intervalo: 1
     velocidad: 7
     dano: 1
     cantidadMeteoritos: 8
-  - alturaActivacion: 60
+  - alturaActivacion: 45
     intervalo: 0.75
     velocidad: 7
     dano: 1
@@ -10478,6 +10478,10 @@ PrefabInstance:
     - target: {fileID: 2375952058104086531, guid: 5fde3f68dfa3db843aafc495fadc7d6a, type: 3}
       propertyPath: m_Name
       value: Lava
+      objectReference: {fileID: 0}
+    - target: {fileID: 6758660701225229828, guid: 5fde3f68dfa3db843aafc495fadc7d6a, type: 3}
+      propertyPath: acceleration
+      value: 0.01
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

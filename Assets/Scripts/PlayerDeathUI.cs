@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -65,19 +66,20 @@ public class PlayerDeathUI : MonoBehaviour
             CheckpointRespawn.CancelarRespawn();
         }
 
-        // No modificamos el progreso de las oleadas.
+        // Recuperamos el tiempo normal del juego.
         Time.timeScale = 1f;
 
+        // La nueva instancia del gestor identificara la oleada
+        // correspondiente a la posicion del checkpoint.
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );
     }
 
-    // Regresa al menu y elimina el progreso de las oleadas.
+    // Regresa al menu.
     public void VolverAlMenu()
     {
         CheckpointRespawn.CancelarRespawn();
-        GestorEventosDinamicos.ReiniciarProgreso();
 
         Time.timeScale = 1f;
 
@@ -88,8 +90,6 @@ public class PlayerDeathUI : MonoBehaviour
     public void ReiniciarNivel()
     {
         CheckpointRespawn.CancelarRespawn();
-
-        GestorEventosDinamicos.ReiniciarProgreso();
 
         Time.timeScale = 1f;
 

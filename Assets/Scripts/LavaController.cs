@@ -39,7 +39,6 @@ public class LavaController : MonoBehaviour
         rb.MovePosition(nuevaPosicion);
     }
 
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (jugadorMuerto || !collision.CompareTag("Player"))
@@ -47,18 +46,15 @@ public class LavaController : MonoBehaviour
 
         jugadorMuerto = true;
 
-        // Comprobar si el jugador tiene nuestro sistema de vida.
         PlayerHealth health =
             collision.GetComponentInParent<PlayerHealth>();
 
         if (health != null)
         {
-            // PlayerHealth notificará la muerte a PlayerDeathUI.
             health.KillInstantly();
             return;
         }
 
-        // Sistema antiguo para escenas sin PlayerHealth.
         if (panelMuerte != null)
         {
             panelMuerte.SetActive(true);
@@ -71,16 +67,12 @@ public class LavaController : MonoBehaviour
         }
     }
 
-
     public void Reintentar()
     {
-        // Restablecemos el progreso de las oleadas.
-        GestorEventosDinamicos.ReiniciarProgreso();
-
         // Recuperamos el tiempo normal del juego.
         Time.timeScale = 1f;
 
-        // Recargamos la escena actual.
+        // La nueva instancia del gestor inicializara las oleadas.
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );

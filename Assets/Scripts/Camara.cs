@@ -1,30 +1,45 @@
 
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class Camara : MonoBehaviour
 {
     [Header("Seguimiento del jugador")]
     [SerializeField] private Transform objetivo;
+    [SerializeField] private float offsetHorizontal = 0f;
     [SerializeField] private float offsetVertical = 2f;
-    [SerializeField] private float suavizado = 0.2f;
+    [SerializeField] private float suavizadoHorizontal = 0.2f;
+    [SerializeField] private float suavizadoVertical = 0.2f;
     [SerializeField] private float maxAltura = 98f;
+
+    [Header("Limites de la camara")]
+    [SerializeField] private bool limitarMovimientoHorizontal = true;
+    [SerializeField] private float limiteIzquierdo = -15f;
+    [SerializeField] private float limiteDerecho = 15f;
 
     [Header("Sacudida de camara")]
     [SerializeField] private float intensidadSacudida = 0.4f;
     [SerializeField] private float duracionSacudida = 0.8f;
     [SerializeField] private float frecuenciaSacudida = 20f;
 
+    private Camera camara;
+
+    private float velocidadHorizontal;
     private float velocidadVertical;
+
     private float alturaBase;
     private float posicionXBase;
     private float posicionZBase;
 
     private float tiempoRestanteSacudida;
     private float intensidadActual;
+    private float duracionSacudidaActual;
     private float semillaSacudida;
 
     private void Awake()
     {
+        camara = GetComponent<Camera>();
+
         // Guardamos la posicion inicial de la camara.
         alturaBase = transform.position.y;
         posicionXBase = transform.position.x;
@@ -42,6 +57,37 @@ public class Camara : MonoBehaviour
         if (objetivo == null)
             return;
 
+        // Seguimiento horizontal del jugador.
+        float objetivoX = objetivo.position.x + offsetHorizontal;
+
+        // Aplicar limites a la posicion de la camara.
+        if (limitarMovimientoHorizontal)
+        {
+            objetivoX = Mathf.Clamp(
+                objetivoX,
+                limiteIzquierdo,
+                limiteDerecho
+            );
+        }
+
+        posicionXBase = Mathf.SmoothDamp(
+            posicionXBase,
+            objetivoX,
+            ref velocidadHorizontal,
+            suavizadoHorizontal
+        );
+
+        // Evitar que el suavizado sobrepase los limites.
+        if (limitarMovimientoHorizontal)
+        {
+            posicionXBase = Mathf.Clamp(
+                posicionXBase,
+                limiteIzquierdo,
+                limiteDerecho
+            );
+        }
+
+        // Seguimiento vertical del jugador.
         float alturaObjetivo = objetivo.position.y + offsetVertical;
 
         if (objetivo.position.y > maxAltura)
@@ -51,7 +97,7 @@ public class Camara : MonoBehaviour
             alturaBase,
             alturaObjetivo,
             ref velocidadVertical,
-            suavizado
+            suavizadoVertical
         );
     }
 
@@ -64,7 +110,7 @@ public class Camara : MonoBehaviour
             tiempoRestanteSacudida -= Time.deltaTime;
 
             float progreso = Mathf.Clamp01(
-                tiempoRestanteSacudida / duracionSacudida
+                tiempoRestanteSacudida / duracionSacudidaActual
             );
 
             float intensidad = intensidadActual *
@@ -97,18 +143,13 @@ public class Camara : MonoBehaviour
         );
     }
 
-   public void IniciarSacudida(
-    float intensidad,
-    float duracion
-    )
+    public void IniciarSacudida(float intensidad, float duracion)
     {
-        Debug.Log("TERREMOTO ACTIVADO");
-
         if (duracion <= 0f || intensidad <= 0f)
             return;
 
         intensidadActual = intensidad;
-        duracionSacudida = duracion;
+        duracionSacudidaActual = duracion;
         tiempoRestanteSacudida = duracion;
 
         semillaSacudida = Random.Range(0f, 1000f);

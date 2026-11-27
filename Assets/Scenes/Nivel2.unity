@@ -2386,9 +2386,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Camara
   objetivo: {fileID: 1305185953}
+  offsetHorizontal: 0
   offsetVertical: 2
-  suavizado: 0.2
+  suavizadoHorizontal: 0.2
+  suavizadoVertical: 0.2
   maxAltura: 98
+  limitarMovimientoHorizontal: 1
+  limiteIzquierdo: -10
+  limiteDerecho: 10
   intensidadSacudida: 0.15
   duracionSacudida: 0.45
   frecuenciaSacudida: 20
